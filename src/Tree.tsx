@@ -498,7 +498,7 @@ class Tree<TreeDataType extends BasicDataNode = DataNode> extends React.Componen
    * But let's just keep it to avoid event trigger logic change.
    */
   onNodeDragEnter = (event: React.DragEvent<HTMLDivElement>, node: NodeInstance<TreeDataType>) => {
-    const { expandedKeys, keyEntities, dragChildrenKeys, flattenNodes } = this.state;
+    const { expandedKeys, keyEntities, dragChildrenKeys, flattenNodes, dragging } = this.state;
     const { onDragEnter, onExpand, allowDrop, direction } = this.props;
     const { pos, eventKey } = node.props;
     const { dragNode } = this;
@@ -509,7 +509,7 @@ class Tree<TreeDataType extends BasicDataNode = DataNode> extends React.Componen
       this.currentMouseOverDroppableNodeKey = eventKey;
     }
 
-    if (!dragNode) {
+    if (!dragging && !dragNode) {
       this.resetDragState();
       return;
     }
@@ -609,9 +609,14 @@ class Tree<TreeDataType extends BasicDataNode = DataNode> extends React.Componen
   };
 
   onNodeDragOver = (event: React.DragEvent<HTMLDivElement>, node: NodeInstance<TreeDataType>) => {
-    const { dragChildrenKeys, flattenNodes, keyEntities, expandedKeys, indent } = this.state;
+    const { dragChildrenKeys, flattenNodes, keyEntities, expandedKeys, indent, dragging } = this.state;
     const { onDragOver, allowDrop, direction } = this.props;
     const { dragNode } = this;
+
+    if (!dragging && !dragNode) {
+      return;
+    }
+
     const {
       dropPosition,
       dropLevelOffset,
