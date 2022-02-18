@@ -487,7 +487,11 @@ class Tree<TreeDataType extends BasicDataNode = DataNode> extends React.Componen
 
     window.addEventListener('dragend', this.onWindowDragEnd);
 
-    onDragStart?.({ event, node: convertNodePropsToEventData(node.props), cleanDragState: this.cleanDragState });
+    onDragStart?.({
+      event,
+      node: convertNodePropsToEventData(node.props),
+      cleanDragState: this.cleanDragState,
+    });
   };
 
   /**
@@ -498,11 +502,11 @@ class Tree<TreeDataType extends BasicDataNode = DataNode> extends React.Componen
    * But let's just keep it to avoid event trigger logic change.
    */
   onNodeDragEnter = (event: React.DragEvent<HTMLDivElement>, node: NodeInstance<TreeDataType>) => {
-    const { expandedKeys, keyEntities, dragChildrenKeys, flattenNodes, dragging } = this.state;
+    const { expandedKeys, keyEntities, dragChildrenKeys, flattenNodes, dragging, indent } =
+      this.state;
     const { onDragEnter, onExpand, allowDrop, direction } = this.props;
     const { pos, eventKey } = node.props;
     const { dragNode } = this;
-    const indent = this.listRef.current.getIndentWidth();
 
     // record the key of node which is latest entered, used in dragleave event.
     if (this.currentMouseOverDroppableNodeKey !== eventKey) {
@@ -609,7 +613,8 @@ class Tree<TreeDataType extends BasicDataNode = DataNode> extends React.Componen
   };
 
   onNodeDragOver = (event: React.DragEvent<HTMLDivElement>, node: NodeInstance<TreeDataType>) => {
-    const { dragChildrenKeys, flattenNodes, keyEntities, expandedKeys, indent, dragging } = this.state;
+    const { dragChildrenKeys, flattenNodes, keyEntities, expandedKeys, indent, dragging } =
+      this.state;
     const { onDragOver, allowDrop, direction } = this.props;
     const { dragNode } = this;
 
@@ -682,7 +687,11 @@ class Tree<TreeDataType extends BasicDataNode = DataNode> extends React.Componen
       });
     }
 
-    onDragOver?.({ event, node: convertNodePropsToEventData(node.props), cleanDragState: this.cleanDragState });
+    onDragOver?.({
+      event,
+      node: convertNodePropsToEventData(node.props),
+      cleanDragState: this.cleanDragState,
+    });
   };
 
   onNodeDragLeave: NodeDragEventHandler = (event, node) => {
@@ -698,7 +707,11 @@ class Tree<TreeDataType extends BasicDataNode = DataNode> extends React.Componen
 
     const { onDragLeave } = this.props;
 
-    onDragLeave?.({ event, node: convertNodePropsToEventData(node.props), cleanDragState: this.cleanDragState });
+    onDragLeave?.({
+      event,
+      node: convertNodePropsToEventData(node.props),
+      cleanDragState: this.cleanDragState,
+    });
   };
 
   // since stopPropagation() is called in treeNode
@@ -711,14 +724,9 @@ class Tree<TreeDataType extends BasicDataNode = DataNode> extends React.Componen
   // if onNodeDragEnd is called, onWindowDragEnd won't be called since stopPropagation() is called
   onNodeDragEnd: NodeDragEventHandler = (event, node, outsideTree = false) => {
     const { onDragEnd } = this.props;
-    const { dragging } = this.state;
     this.setState({
       dragOverNodeKey: null,
     });
-
-    if (dragging) {
-      this.cleanDragState();
-    }
 
     this.cleanDragState();
 
@@ -734,7 +742,7 @@ class Tree<TreeDataType extends BasicDataNode = DataNode> extends React.Componen
   };
 
   onNodeDrop = (event: React.DragEvent<HTMLDivElement>, node, outsideTree: boolean = false) => {
-    const { dragChildrenKeys, dropPosition, dropTargetKey, dropTargetPos, dropAllowed, dragging } =
+    const { dragChildrenKeys, dropPosition, dropTargetKey, dropTargetPos, dropAllowed } =
       this.state;
 
     if (!dropAllowed) return;
@@ -744,10 +752,6 @@ class Tree<TreeDataType extends BasicDataNode = DataNode> extends React.Componen
     this.setState({
       dragOverNodeKey: null,
     });
-
-    if (dragging) {
-      this.cleanDragState();
-    }
 
     this.cleanDragState();
 
@@ -1014,12 +1018,11 @@ class Tree<TreeDataType extends BasicDataNode = DataNode> extends React.Componen
     const { onMouseEnter } = this.props;
 
     onMouseEnter?.({ event, node });
-    
   };
 
   onNodeMouseLeave: NodeMouseEventHandler = (event, node) => {
     const { onMouseLeave } = this.props;
-    
+
     onMouseLeave?.({ event, node });
   };
 

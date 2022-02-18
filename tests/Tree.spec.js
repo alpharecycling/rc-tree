@@ -975,7 +975,7 @@ describe('Tree Basic', () => {
     const wrapper = mount(
       <div>
         {createTree()}
-        {createTree({ onDrop })}
+        {createTree({ dragging: true, onDrop })}
       </div>,
     );
 
